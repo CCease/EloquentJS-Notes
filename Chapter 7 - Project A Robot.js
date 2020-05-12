@@ -14,7 +14,7 @@ function buildGraph(edges) {
     if (graph[from] == null) {
       graph[from] = [to];          //If empty, create first, .push cannot use if graph[from] does not exist.
     } else {
-      graph[from].push(to);        //Add connections indside.
+      graph[from].push(to);        //AddB connections indside.
     }
   }
   for (let [from, to] of edges.map(r => r.split("-"))) { //From = left part of road, to = left part of road
@@ -86,7 +86,7 @@ VillageState.random = function(parcelCount = 5) { //Generate a village state whi
   return new VillageState("Post Office", parcels);
 };
 
-//runRobot(VillageState.random(), randomRobot);
+//runRobot(VillageState.random(), randomRobot); //Run the robot. 
 
 const mailRoute = [
   "Alice's House", "Cabin", "Alice's House", "Bob's House",
@@ -127,11 +127,18 @@ function goalOrientedRobot({place, parcels}, route) {
   return {direction: route[0], memory: route.slice(1)};
 }
 
+/**
+ * Write a function compareRobots that takes two robots 
+ * (and their starting memory).
+ * It should generate 100 tasks and let each of the robots 
+ * solve each of these tasks. When done, it should output the average
+ * number of steps each robot took per task.
+ */
 function compareRobots(robot1, memory1, robot2, memory2) {
   tasks = []
   
   for(let task = 0; task < 100; task ++){
-    tasks[task] = VillageState.random();
+    tasks[task] = VillageState.random(); //Random 100 state.
   }
   
   robot1turn = 0;
@@ -140,7 +147,7 @@ function compareRobots(robot1, memory1, robot2, memory2) {
   for(let i = 0; i < tasks.length; i++){
     state1 = tasks[i];
     state2 = tasks[i];
-  	for(let turn = 0;;turn++){
+  	for(let turn = 0;;turn++){ //Using robot 1 do deliver parcel.
   	  if(state1.parcels.length == 0){
         robot1turn=robot1turn + turn;
         break;
@@ -148,10 +155,9 @@ function compareRobots(robot1, memory1, robot2, memory2) {
       let action = robot1(state1,memory1);
       state1 = state1.move(action.direction);
       memory1 = action.memory;
-      
   	}
     
-    for(let turn2 = 0;;turn2++){
+    for(let turn2 = 0;;turn2++){ //Using robot 2 to deliver parcel.
   	  if(state2.parcels.length == 0){
         robot2turn=robot2turn + turn2;
         break;
@@ -159,12 +165,150 @@ function compareRobots(robot1, memory1, robot2, memory2) {
       let action = robot2(state2,memory2);
       state2 = state2.move(action.direction);
       memory2 = action.memory;
-      
   	}
-    console.log(i, robot1turn, robot2turn);
+    //console.log(i, robot1turn, robot2turn);
   }
   
   console.log(`Robot 1 takes ${robot1turn/100} turn to complete the tasks, Robot 2 takes ${robot2turn/100} turn to complete the tasks.`)
 }
 
-compareRobots(routeRobot, [], goalOrientedRobot, []);
+/** Book Example
+ * function countSteps(state, robot, memory) {
+  for (let steps = 0;; steps++) {
+    if (state.parcels.length == 0) return steps;
+    let action = robot(state, memory);
+    state = state.move(action.direction);
+    memory = action.memory;
+  }
+}
+
+function compareRobots(robot1, memory1, robot2, memory2) {
+  let total1 = 0, total2 = 0;
+  for (let i = 0; i < 100; i++) {
+    let state = VillageState.random();
+    total1 += countSteps(state, robot1, memory1);
+    total2 += countSteps(state, robot2, memory2);
+  }
+  console.log(`Robot 1 needed ${total1 / 100} steps per task`)
+  console.log(`Robot 2 needed ${total2 / 100}`)
+}
+ */
+
+compareRobots(efficientRobot, [], lazyRobot, []);
+
+/**
+ * Write a robot faster then goalOrientedRobot. 
+ */
+
+ function efficientRobot({place, parcels}, route){
+  if (route.length == 0) {
+    allroutepick = [];
+    shorteststepick = 100000;
+    shorteststepickindex=0;
+    allroutedeliver = [];
+    shorteststepdeliver = 100000;
+    shorteststepdeliverindex = 0;
+    for (let index = 0; index < parcels.length; index++) {
+      let parcel = parcels[index];
+      if (parcel.place != place) {
+      allroutepick.push(findRoute(roadGraph, place, parcel.place));
+      } else {
+      allroutedeliver.push(findRoute(roadGraph, place, parcel.address));
+      } 
+    }
+    
+    //console.log("deliver :",allroutedeliver.length, "pick",allroutepick.length);
+
+    if(allroutepick.length != 0){
+      shorteststepick = allroutepick[0].length;
+      for (let index = 0; index < allroutepick.length; index++) {
+        if(allroutepick[index].length < shorteststepick){
+          shorteststepick = allroutepick[index].length;
+          shorteststepickindex = index;
+        }
+      }
+    }
+
+    if (allroutedeliver.length != 0) {
+      shorteststepdeliver = allroutedeliver[0].length;
+      for (let index = 0; index < allroutedeliver.length; index++) {
+        if(allroutedeliver[index].length < shorteststepdeliver){
+          shorteststepdeliver = allroutedeliver[index].length;
+          shorteststepdeliverindex = index;
+        }
+      }
+    }
+    
+    //console.log("allroutedeliver = ",allroutedeliver, "allroutepick = ", allroutepick);
+    //console.log("deliverstep = ",shorteststepdeliver, "pick step = ",shorteststepick);
+    if(shorteststepdeliver < shorteststepick){
+      //console.log("Entered deliver shorter.")
+      route = allroutedeliver[shorteststepdeliverindex];
+    }
+    else{
+      //console.log("Entered pick shorter.")
+      route = allroutepick[shorteststepickindex];
+    }
+  }
+  return {direction: route[0], memory: route.slice(1)};
+ }
+
+//Version from Book
+function lazyRobot({place, parcels},route){
+  if (route.length == 0) {
+    let routes = parcels.map(parcel => {//get route for every parcel
+      if(parcel.place != place){
+        return {route: findRoute(roadGraph, place, parcel.place), pickUp:true};
+      }
+      else{
+        return {route: findRoute(roadGraph,place,parcel.address), pickUp:false}
+      }
+    })
+    
+    function score({route,pickUp}){
+      return (pickUp ? 0.5 : 0) - route.length // -(route.length - (pickUp ? 0.5: 0)) Score higher better
+    }
+    
+    route = routes.reduce((a, b) => score(a) > score(b) ? a : b).route;
+  }
+  return {direction: route[0], memory: route.slice(1)}
+}
+
+
+ /**
+  * Complete the class PGroup. 
+  */
+
+ class PGroup {
+  // Your code here
+  constructor(inventory) {
+    this.inventory = inventory;
+  }
+  
+  add(element) {
+    if (!this.has(element)) {
+      return new PGroup(this.inventory.concat(element));
+    }
+    else{console.log("This element already in group.")} 
+  }
+
+  delete(element){
+    return new PGroup(this.inventory.splice(this.inventory.findIndex(e => {e == element})));
+  }
+
+  has(element){
+    return this.inventory.includes(element);
+  }
+}
+
+PGroup.empty = new PGroup([]);
+let a = PGroup.empty.add("a");
+let ab = a.add("b");
+let b = ab.delete("a");
+
+console.log(b.has("b"));
+// → true
+console.log(a.has("b"));
+// → false
+console.log(b.has("a"));
+// → false
