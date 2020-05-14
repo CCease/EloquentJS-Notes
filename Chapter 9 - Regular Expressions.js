@@ -57,7 +57,7 @@
  * console.log(notBinary.test("1100100010100110"));
  * // → false
  * console.log(notBinary.test("1100100010200110"));
- * // → true
+ * // → true, match = 2
  * ----------------------------------------------------
  * Plus Sign +
  * 
@@ -364,9 +364,170 @@
  * In here the match is assign again each iteration, thanks to =
  * and what line 337 says. 
  * -----------------------------------------------------------
+ * Real Example - [Parsing an INI file]
+ * See chapter 8.md 
+ * -----------------------------------------------------------
+ * International Characters
+ * 
+ * The JavaScript regex only treat 26 char in the Latin alphabet
+ * decimal, and the underscore, other will not match.
+ * 
+ * console.log(/🍎{3}/.test("🍎🍎🍎"));
+ * // → false
+ * console.log(/<.>/.test("<🌹>"));
+ * // → false
+ * console.log(/<.>/u.test("<🌹>"));
+ * // → true
+ * 
+ * u for unicode can be add in to regex to make it treat
+ * character like the strawberry above (2 code unit) properly
+ * 
+ * Can use \p + u in regular expression to match all characters
+ * to which the Unicode standard assigns a give property
+ * 
+ * console.log(/\p{Script=Greek}/u.test("α"));
+ * // → true
+ * console.log(/\p{Script=Arabic}/u.test("α"));
+ * // → false
+ * console.log(/\p{Alphabetic}/u.test("α"));
+ * // → true
+ * console.log(/\p{Alphabetic}/u.test("!"));
+ * // → false
  * 
  * 
+ * \p{Property=Value} can use to match any character that has
+ * the given value for that property. 
+ * If the property name is left off as in \p{Name}, the name
+ * is assumed to be either a binary property such as Alphabetic
+ * or a category such as Number.
+ * 
+ * ---------------------------------------------------------------
+ * Summary (Copy straight from the book)
+ * 
+ * /abc/	A sequence of characters
+ * /[abc]/	Any character from a set of characters
+ * /[^abc]/	Any character not in a set of characters
+ * /[0-9]/	Any character in a range of characters
+ * /x+/	One or more occurrences of the pattern x
+ * /x+?/	One or more occurrences, nongreedy */
+// /x*/	Zero or more occurrences
+/* /x?/	Zero or one occurrence
+ * /x{2,4}/	Two to four occurrences
+ * /(abc)/	A group
+ * /a|b|c/	Any one of several patterns
+ * /\d/	Any digit character
+ * /\w/	An alphanumeric character (“word character”)
+ * /\s/	Any whitespace character
+ * /./	Any character except newlines
+ * /\b/	A word boundary
+ * /^/	Start of input
+ * /$/	End of input
+ * 
+ * 
+ * Regular Expression has
+ * -.test(), test string match or not
+ * -.exec(),return array of all matched groups
+ * -.index,show where the match started.
+ * Regular Expression Options(Written after closing slash)
+ * i - case insensitive
+ * g - global(replace all instean just replace first)
+ * y - sticky(aim for less)
+ * u - unicode mode
+ * 
+ * String has
+ * -.match(regex here)to match them again a regex
+ * -.search(regex here)to search for one and return the starting positon
+ * -.replace("tofind","toreplace")tofind can be regex,toreplace can be
+ *                                string or function. 
+ * 
+ * -----------------------------------------------------------------
  */
+ //Exercise 1 : Regexp Golf
+ 
+ // Fill in the regular expressionsFor each of the 
+ // following items, write a regular expression to
+ // test whether any of the given substrings occur
+ // in a string. The regular expression should match
+ // only strings containing one of the substrings described.
+
+ // 1.car and cat
+ // 2.pop and prop
+ // 3.ferret, ferry, and ferrari
+ // 4.Any word ending in ious
+ // 5.A whitespace character followed by a period, comma, colon, or semicolon
+ // 6.A word longer than six letters
+ // 7.A word without the letter e (or E)
+
+verify(/ca(t|r)/,
+    ["my car", "bad cats"],
+    ["camper", "high art"]);
+
+verify(/pr?op/,
+    ["pop culture", "mad props"],
+    ["plop", "prrrop"]);
+
+verify(/ferr(et|y|ari)/,
+    ["ferret", "ferry", "ferrari"],
+    ["ferrum", "transfer A"]);
+
+verify(/ious\b/,
+    ["how delicious", "spacious room"],
+    ["ruinous", "consciousness"]);
+
+verify(/\s(\.|,|\(|\)|\{|\})/,
+    ["bad punctuation ."],
+    ["escape the period"]);
+
+verify(/\b\w{7,}\b/,
+    ["hottentottententen"],
+    ["no", "hotten totten tenten"]);
+
+verify(/\b[^\We]+\b/i, 
+    //Use + to match every charcter,
+    //If no + means find \b"Only one non e and space char"\b
+
+    ["red platypus", "wobbling nest"],
+    ["earth bed", "learning ape", "BEET"]);
 
 
+function verify(regexp, yes, no) {
+// Ignore unfinished exercises
+if (regexp.source == "...") return;
+for (let str of yes) if (!regexp.test(str)) {
+ console.log(`Failure to match '${str}'`);
+}
+for (let str of no) if (regexp.test(str)) {
+ console.log(`Unexpected match for '${str}'`);
+}
+}
 
+//Exercise 2 : Quoting Style
+//Change ' to " but dont change 'in I'm and it's etc"
+
+let text = "'I'm the cook,' he said, 'it's my job.'";
+// Change this call.
+console.log(text.replace(/(^|\W)'|'(\W|$)/g, "$1\"$2"));
+// → "I'm the cook," he said, "it's my job."
+
+//Exercise 3 : Numbers Again
+//Write an regex match only JavaScript style number.
+//Optional + OR - OR . OR exponent notationin front of  the number. 
+//. is not accept
+
+// Fill in this regular expression.
+let number = /^(([.+-]?\d+)|(\d+\.?\d*([eE][+-]|[eE])?\d*))$/;
+//sample answer is /^[+\-]?(\d+(\.\d*)?|\.\d+)([eE][+\-]?\d+)?$/
+
+// Tests:
+for (let str of ["1", "-1", "+15", "1.55", ".5", "5.",
+                 "1.3e2", "1E-4", "1e+12"]) {
+  if (!number.test(str)) {
+    console.log(`Failed to match '${str}'`);
+  }
+}
+for (let str of ["1a", "+-1", "1.2.3", "1+1", "1e4.5",
+                 ".5.", "1f5", "."]) {
+  if (number.test(str)) {
+    console.log(`Incorrectly accepted '${str}'`);
+  }
+}
