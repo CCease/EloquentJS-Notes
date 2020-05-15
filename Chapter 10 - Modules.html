@@ -1,0 +1,463 @@
+<!DOCTYPE html><html><head>
+      <title>Chapter 10 - Modules</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:///c:\Users\Vanis\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.5.3\node_modules\@shd101wyy\mume\dependencies\katex\katex.min.css">
+      
+      
+
+      
+      
+      
+      
+      
+      
+      
+
+      <style>
+      /**
+ * prism.js Github theme based on GitHub's theme.
+ * @author Sam Clarke
+ */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #333;
+  background: none;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.4;
+
+  -moz-tab-size: 8;
+  -o-tab-size: 8;
+  tab-size: 8;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+  padding: .8em;
+  overflow: auto;
+  /* border: 1px solid #ddd; */
+  border-radius: 3px;
+  /* background: #fff; */
+  background: #f5f5f5;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: .1em;
+  border-radius: .3em;
+  white-space: normal;
+  background: #f5f5f5;
+}
+
+.token.comment,
+.token.blockquote {
+  color: #969896;
+}
+
+.token.cdata {
+  color: #183691;
+}
+
+.token.doctype,
+.token.punctuation,
+.token.variable,
+.token.macro.property {
+  color: #333;
+}
+
+.token.operator,
+.token.important,
+.token.keyword,
+.token.rule,
+.token.builtin {
+  color: #a71d5d;
+}
+
+.token.string,
+.token.url,
+.token.regex,
+.token.attr-value {
+  color: #183691;
+}
+
+.token.property,
+.token.number,
+.token.boolean,
+.token.entity,
+.token.atrule,
+.token.constant,
+.token.symbol,
+.token.command,
+.token.code {
+  color: #0086b3;
+}
+
+.token.tag,
+.token.selector,
+.token.prolog {
+  color: #63a35c;
+}
+
+.token.function,
+.token.namespace,
+.token.pseudo-element,
+.token.class,
+.token.class-name,
+.token.pseudo-class,
+.token.id,
+.token.url-reference .token.variable,
+.token.attr-name {
+  color: #795da3;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.token.title,
+.token.title .token.punctuation {
+  font-weight: bold;
+  color: #1d3e81;
+}
+
+.token.list {
+  color: #ed6a43;
+}
+
+.token.inserted {
+  background-color: #eaffea;
+  color: #55a532;
+}
+
+.token.deleted {
+  background-color: #ffecec;
+  color: #bd2c00;
+}
+
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+
+/* JSON */
+.language-json .token.property {
+  color: #183691;
+}
+
+.language-markup .token.tag .token.punctuation {
+  color: #333;
+}
+
+/* CSS */
+code.language-css,
+.language-css .token.function {
+  color: #0086b3;
+}
+
+/* YAML */
+.language-yaml .token.atrule {
+  color: #63a35c;
+}
+
+code.language-yaml {
+  color: #183691;
+}
+
+/* Ruby */
+.language-ruby .token.function {
+  color: #333;
+}
+
+/* Markdown */
+.language-markdown .token.url {
+  color: #795da3;
+}
+
+/* Makefile */
+.language-makefile .token.symbol {
+  color: #795da3;
+}
+
+.language-makefile .token.variable {
+  color: #183691;
+}
+
+.language-makefile .token.builtin {
+  color: #0086b3;
+}
+
+/* Bash */
+.language-bash .token.keyword {
+  color: #0086b3;
+}
+
+/* highlight */
+pre[data-line] {
+  position: relative;
+  padding: 1em 0 1em 3em;
+}
+pre[data-line] .line-highlight-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  display: block;
+  width: 100%;
+}
+
+pre[data-line] .line-highlight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: inherit 0;
+  margin-top: 1em;
+  background: hsla(24, 20%, 50%,.08);
+  background: linear-gradient(to right, hsla(24, 20%, 50%,.1) 70%, hsla(24, 20%, 50%,0));
+  pointer-events: none;
+  line-height: inherit;
+  white-space: pre;
+}
+
+pre[data-line] .line-highlight:before, 
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-start);
+  position: absolute;
+  top: .4em;
+  left: .6em;
+  min-width: 1em;
+  padding: 0 .5em;
+  background-color: hsla(24, 20%, 50%,.4);
+  color: hsl(24, 20%, 95%);
+  font: bold 65%/1.5 sans-serif;
+  text-align: center;
+  vertical-align: .3em;
+  border-radius: 999px;
+  text-shadow: none;
+  box-shadow: 0 1px white;
+}
+
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-end);
+  top: auto;
+  bottom: .4em;
+}html body{font-family:"Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ul,html body>ol{margin-bottom:16px}html body ul,html body ol{padding-left:2em}html body ul.no-list,html body ol.no-list{padding:0;list-style-type:none}html body ul ul,html body ul ol,html body ol ol,html body ol ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:bold;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:bold}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em !important;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::before,html body code::after{letter-spacing:-0.2em;content:"\00a0"}html body pre>code{padding:0;margin:0;font-size:.85em !important;word-break:normal;white-space:pre;background:transparent;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;font-size:.85em !important;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:before,html body pre tt:before,html body pre code:after,html body pre tt:after{content:normal}html body p,html body blockquote,html body ul,html body ol,html body dl,html body pre{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body pre,html body code{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview .pagebreak,.markdown-preview .newpage{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center !important}.markdown-preview:not([for="preview"]) .code-chunk .btn-group{display:none}.markdown-preview:not([for="preview"]) .code-chunk .status{display:none}.markdown-preview:not([for="preview"]) .code-chunk .output-div{margin-bottom:16px}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0}@media screen and (min-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{font-size:14px !important;padding:1em}}@media print{html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,0.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul{padding:0 1.6em;margin-top:.8em}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc li{margin-bottom:.8em}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul{list-style-type:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% -  300px);padding:2em calc(50% - 457px -  150px);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+    </head>
+    <body for="html-export">
+      <div class="mume markdown-preview  ">
+      <h1 class="mume-header" id="chapter-10-modulehttpseloquentjavascriptnet10_moduleshtml"><a href="https://eloquentjavascript.net/10_modules.html">Chapter 10 - Module</a></h1>
+
+<h2 class="mume-header" id="modules">Modules</h2>
+
+<p>Module - A piece of program that specifies which other pieces it relies on and which functionality it provides for other modules to use(its interface).</p>
+<blockquote>
+<p>Just putting your JavaScript code into different files does not satisfy these requirements. The files still share the same global namespace. They can, intentionally or accidentally, interfere with each other&#x2019;s bindings. And the dependency structure remains unclear.</p>
+</blockquote>
+<h2 class="mume-header" id="packages">Packages</h2>
+
+<p>A package is a chunk of code that can be distributed (copied and installed). It may contain one or more modules and has information about which other packages it depends on. Also usually comes with documentation.</p>
+<h3 class="mume-header" id="npm">NPM</h3>
+
+<p>NPM is:</p>
+<ol>
+<li>An online service where one can download (and upload) packages</li>
+<li>A program (bundled with Node.js) that helps you install and manage them.</li>
+</ol>
+<h2 class="mume-header" id="improvised-modules">Improvised Modules</h2>
+
+<p>No built-in module system in JS until 2015, so people design their own module system.</p>
+<div class="code-chunk" data-id="code-chunk-id-0" data-cmd="node"><div class="input-div"><pre data-role="codeBlock" data-info="JavaScript cmd=&quot;node&quot;" class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">weekDay</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> names <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">&quot;Sunday&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;Monday&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;Tuesday&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;Wednesday&quot;</span><span class="token punctuation">,</span>
+                 <span class="token string">&quot;Thursday&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;Friday&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;Saturday&quot;</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token punctuation">{</span>
+    <span class="token function">name</span><span class="token punctuation">(</span><span class="token parameter">number</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token keyword">return</span> names<span class="token punctuation">[</span>number<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token function">number</span><span class="token punctuation">(</span><span class="token parameter">name</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token keyword">return</span> names<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>weekDay<span class="token punctuation">.</span><span class="token function">name</span><span class="token punctuation">(</span>weekDay<span class="token punctuation">.</span><span class="token function">number</span><span class="token punctuation">(</span><span class="token string">&quot;Sunday&quot;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// &#x2192; Sunday</span>
+</pre><div class="btn-group"><div class="run-btn btn"><span>&#x25B6;&#xFE0E;</span></div><div class="run-all-btn btn">all</div></div><div class="status">running...</div></div><div class="output-div"></div></div><p>Good : Isolation, to a certain degree<br>
+Drawback: Does not declare dependencies</p>
+<h2 class="mume-header" id="evaluating-data-as-code">Evaluating Data As Code</h2>
+
+<p>There are several ways to take data (a string of code) and run it as part of the current program.</p>
+<p><code>eval</code> is a special operator that execute a string in the <strong>current</strong> scope. (Bad idea because it breaks some of the properties that scopes normally have, uch as it being easily predictable which binding a given name refers to.)</p>
+<div class="code-chunk" data-id="code-chunk-id-1" data-cmd="node"><div class="input-div"><pre data-role="codeBlock" data-info="JavaScript cmd=&quot;node&quot;" class="language-javascript"><span class="token keyword">const</span> x <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token keyword">function</span> <span class="token function">evalAndReturnX</span><span class="token punctuation">(</span><span class="token parameter">code</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">eval</span><span class="token punctuation">(</span>code<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> x<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">evalAndReturnX</span><span class="token punctuation">(</span><span class="token string">&quot;var x = 2&quot;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// &#x2192; 2</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// &#x2192; 1</span>
+</pre><div class="btn-group"><div class="run-btn btn"><span>&#x25B6;&#xFE0E;</span></div><div class="run-all-btn btn">all</div></div><div class="status">running...</div></div><div class="output-div"></div></div><p>Another way, use function constructor. Take a string containing a comma-separated list of arguments and a string containing the function body. It wraps the code in a function value so that it gets its own scope and won&#x2019;t do odd things with other scopes.</p>
+<div class="code-chunk" data-id="code-chunk-id-2" data-cmd="node"><div class="input-div"><pre data-role="codeBlock" data-info="JavaScript cmd=&quot;node&quot;" class="language-javascript"><span class="token keyword">let</span> <span class="token function-variable function">plusOne</span> <span class="token operator">=</span> <span class="token function">Function</span><span class="token punctuation">(</span><span class="token string">&quot;n&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;return n + 1;&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">plusOne</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// &#x2192; 5</span>
+</pre><div class="btn-group"><div class="run-btn btn"><span>&#x25B6;&#xFE0E;</span></div><div class="run-all-btn btn">all</div></div><div class="status">running...</div></div><div class="output-div"></div></div><h2 class="mume-header" id="commonjs">CommonJS</h2>
+
+<p>The most widely used approach to bolted-on JavaScript modules is called CommonJS modules. Node.js uses it and is the system used by most packages on NPM.</p>
+<p>CommonJS use the require function to load the module and returns its interface.</p>
+<p>Below is example, it uses 2 packages from NPM, <code>ordinal</code> to convert numbers to strings like &quot;1st&quot; and &quot;2nd&quot;. <code>date-names</code> to get English names for weekdays and months.</p>
+<div class="code-chunk" data-id="code-chunk-id-3" data-cmd="node"><div class="input-div"><pre data-role="codeBlock" data-info="javascript cmd=&quot;node&quot;" class="language-javascript"><span class="token keyword">const</span> ordinal <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&quot;ordinal&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token punctuation">{</span>days<span class="token punctuation">,</span> months<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&quot;date-names&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+exports<span class="token punctuation">.</span><span class="token function-variable function">formatDate</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">date<span class="token punctuation">,</span> format</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> format<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex">/YYYY|M(MMM)?|Do?|dddd/g</span><span class="token punctuation">,</span> <span class="token parameter">tag</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>tag <span class="token operator">==</span> <span class="token string">&quot;YYYY&quot;</span><span class="token punctuation">)</span> <span class="token keyword">return</span> date<span class="token punctuation">.</span><span class="token function">getFullYear</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>tag <span class="token operator">==</span> <span class="token string">&quot;M&quot;</span><span class="token punctuation">)</span> <span class="token keyword">return</span> date<span class="token punctuation">.</span><span class="token function">getMonth</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>tag <span class="token operator">==</span> <span class="token string">&quot;MMMM&quot;</span><span class="token punctuation">)</span> <span class="token keyword">return</span> months<span class="token punctuation">[</span>date<span class="token punctuation">.</span><span class="token function">getMonth</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>tag <span class="token operator">==</span> <span class="token string">&quot;D&quot;</span><span class="token punctuation">)</span> <span class="token keyword">return</span> date<span class="token punctuation">.</span><span class="token function">getDate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>tag <span class="token operator">==</span> <span class="token string">&quot;Do&quot;</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">ordinal</span><span class="token punctuation">(</span>date<span class="token punctuation">.</span><span class="token function">getDate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>tag <span class="token operator">==</span> <span class="token string">&quot;dddd&quot;</span><span class="token punctuation">)</span> <span class="token keyword">return</span> days<span class="token punctuation">[</span>date<span class="token punctuation">.</span><span class="token function">getDay</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</pre><div class="btn-group"><div class="run-btn btn"><span>&#x25B6;&#xFE0E;</span></div><div class="run-all-btn btn">all</div></div><div class="status">running...</div></div><div class="output-div"></div></div><div class="code-chunk" data-id="code-chunk-id-4" data-cmd="node"><div class="input-div"><pre data-role="codeBlock" data-info="javascript cmd=&quot;node&quot;" class="language-javascript"><span class="token keyword">const</span> <span class="token punctuation">{</span>formatDate<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&quot;./format-date&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">formatDate</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token number">2017</span><span class="token punctuation">,</span> <span class="token number">9</span><span class="token punctuation">,</span> <span class="token number">13</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                       <span class="token string">&quot;dddd the Do&quot;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// &#x2192; Friday the 13th</span>
+</pre><div class="btn-group"><div class="run-btn btn"><span>&#x25B6;&#xFE0E;</span></div><div class="run-all-btn btn">all</div></div><div class="status">running...</div></div><div class="output-div"></div></div><p>A defination of require in most minimal form:</p>
+<p>readFile is a made-up function that reads a file and returns its contents as a sring.</p>
+<div class="code-chunk" data-id="code-chunk-id-5" data-cmd="node"><div class="input-div"><pre data-role="codeBlock" data-info="javascript cmd=&quot;node&quot;" class="language-javascript">require<span class="token punctuation">.</span>cache <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">function</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token parameter">name</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token punctuation">(</span>name <span class="token keyword">in</span> require<span class="token punctuation">.</span>cache<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> code <span class="token operator">=</span> <span class="token function">readFile</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> module <span class="token operator">=</span> <span class="token punctuation">{</span>exports<span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    require<span class="token punctuation">.</span>cache<span class="token punctuation">[</span>name<span class="token punctuation">]</span> <span class="token operator">=</span> module<span class="token punctuation">;</span>
+    <span class="token keyword">let</span> <span class="token function-variable function">wrapper</span> <span class="token operator">=</span> <span class="token function">Function</span><span class="token punctuation">(</span><span class="token string">&quot;require, exports, module&quot;</span><span class="token punctuation">,</span> code<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">wrapper</span><span class="token punctuation">(</span>require<span class="token punctuation">,</span> module<span class="token punctuation">.</span>exports<span class="token punctuation">,</span> module<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> require<span class="token punctuation">.</span>cache<span class="token punctuation">[</span>name<span class="token punctuation">]</span><span class="token punctuation">.</span>exports<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</pre><div class="btn-group"><div class="run-btn btn"><span>&#x25B6;&#xFE0E;</span></div><div class="run-all-btn btn">all</div></div><div class="status">running...</div></div><div class="output-div"></div></div><p>require.cache is the cache to keep the already loaded modules.</p>
+<p>It first check if a module is loaded or not if not then load it.</p>
+<p>Wrapper function use code as function body and use require, exports, and module as parameters. The result of function wrapper will change the value in require.cache[name].exports.</p>
+<p>By defining require, exports, and module as parameters for the generated wrapper function (and passing the appropriate values when calling it), the loader makes sure that these bindings are available in the module&#x2019;s scope.</p>
+<div class="code-chunk" data-id="code-chunk-id-6" data-cmd="node"><div class="input-div"><pre data-role="codeBlock" data-info="JavaScript cmd=&quot;node&quot;" class="language-javascript"><span class="token keyword">const</span> <span class="token punctuation">{</span>parse<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&quot;ini&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">parse</span><span class="token punctuation">(</span><span class="token string">&quot;x = 10\ny = 20&quot;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// &#x2192; {x: &quot;10&quot;, y: &quot;20&quot;}</span>
+</pre><div class="btn-group"><div class="run-btn btn"><span>&#x25B6;&#xFE0E;</span></div><div class="run-all-btn btn">all</div></div><div class="status">running...</div></div><div class="output-div"></div></div><h2 class="mume-header" id="ecmascript-modules">ECMAScript Modules</h2>
+
+<p>JavaScript own different module system, ECMAScript.(From 2015)</p>
+<p>Use import keyword instead of calling a function. Similarly, export is use to export things.</p>
+<div class="code-chunk" data-id="code-chunk-id-7" data-cmd="node"><div class="input-div"><pre data-role="codeBlock" data-info="JavaScript cmd=&quot;node&quot;" class="language-javascript"><span class="token keyword">const</span> <span class="token punctuation">{</span>parse<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&quot;ini&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">parse</span><span class="token punctuation">(</span><span class="token string">&quot;x = 10\ny = 20&quot;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// &#x2192; {x: &quot;10&quot;, y: &quot;20&quot;}</span>
+</pre><div class="btn-group"><div class="run-btn btn"><span>&#x25B6;&#xFE0E;</span></div><div class="run-all-btn btn">all</div></div><div class="status">running...</div></div><div class="output-div"></div></div><p>Import imports binding, not value.</p>
+<h2 class="mume-header" id="building-and-bundling">Building and Bundling</h2>
+
+<p>Many extensions are use to convert chosen JS to plain old JS or past version of JS to be able to run on old browsers.</p>
+<p><strong>Bundlers</strong> - A tool use to roll a programs into a single big file before they publish into the web to increase program efficient.</p>
+<p><strong>Minifiers</strong> - A tool that take a JS program and make it smaller by automatically removing comments and whitespace, renaming bindings, and replacing pieces of code with equivalent code that take up less space.</p>
+<p>What discuss here is just to let reader aware the JavaScript code we run is often not the code as it was written.</p>
+<h2 class="mume-header" id="modular-design">Modular Design</h2>
+
+<p>Aspect of Module design:</p>
+<ol>
+<li>
+<p>Ease to use.(After you forgor what you did you still can pick it up.) Just like JSON and INI, use once remember easily.</p>
+</li>
+<li>
+<p>Ease which something can be composed with other code. (INI file reader that read file from disk cant use in a scenario where ini comes from other source.)</p>
+</li>
+</ol>
+<blockquote>
+<p>Relatedly, stateful objects are sometimes useful or even necessary, but if something can be done with a function, use a function. Several of the INI file readers on NPM provide an interface style that requires you to first create an object, then load the file into your object, and finally use specialized methods to get at the results. This type of thing is common in the object-oriented tradition, and <strong>it&#x2019;s terrible.</strong> Instead of making a single function call and moving on, you have to perform the ritual of moving your object through various states. And because the data is now wrapped in a specialized object type, all code that interacts with it has to know about that type, creating unnecessary interdependencies.</p>
+</blockquote>
+<p>Points</p>
+<ol>
+<li>
+<p>If something can be done with function, use function.</p>
+</li>
+<li>
+<p>When an array suffices, use array, dont define new data structures. (eg graph in <a href="https://eloquentjavascript.net/07_robot.html">chapter 7</a> no obvious way to represent, so use object which properties hold arrays of string.)</p>
+</li>
+</ol>
+<p>Some barrier to composition is various packeges are using different data structure to describe similar things, Therefore, if you want to design for composability, find out what data structures other people are using and, when possible, follow their example.</p>
+<h2 class="mume-header" id="summary">Summary</h2>
+
+<p>Modules provide structure to bigger programs by separating the code into pieces with clear interfaces and dependencies. The interface is the part of the module that&#x2019;s visible from other modules, and the dependencies are the other modules that it makes use of.</p>
+<p>Because JavaScript historically did not provide a module system, the CommonJS system was built on top of it. Then at some point it did get a built-in system, which now coexists uneasily with the CommonJS system.</p>
+<p>A package is a chunk of code that can be distributed on its own. NPM is a repository of JavaScript packages. You can download all kinds of useful (and useless) packages from it.</p>
+<h2 class="mume-header" id="exercise">Exercise</h2>
+
+<p>Skipped, <a href="https://eloquentjavascript.net/10_modules.html#h_TcUD2vzyMe">this part</a> on the book.</p>
+<p>Exercise about</p>
+<p>thinking If you were to write that project as a modular program, what modules would you create? Which module would depend on which other module, and what would their interfaces look like?</p>
+<p>Which pieces are likely to be available prewritten on NPM? Would you prefer to use an NPM package or write them yourself?</p>
+<p>and</p>
+<p>Write a CommonJS module, based on the example from Chapter 7, that contains the array of roads and exports the graph data structure representing them as roadGraph.</p>
+<p>and</p>
+<p>Can you see how it handles cycles? What would go wrong when a module in a cycle does replace its default exports object?</p>
+
+      </div>
+      <div class="md-sidebar-toc"><ul>
+<li><a href="#chapter-10-modulehttpseloquentjavascriptnet10_moduleshtml">Chapter 10 - Module</a>
+<ul>
+<li><a href="#modules">Modules</a></li>
+<li><a href="#packages">Packages</a>
+<ul>
+<li><a href="#npm">NPM</a></li>
+</ul>
+</li>
+<li><a href="#improvised-modules">Improvised Modules</a></li>
+<li><a href="#evaluating-data-as-code">Evaluating Data As Code</a></li>
+<li><a href="#commonjs">CommonJS</a></li>
+<li><a href="#ecmascript-modules">ECMAScript Modules</a></li>
+<li><a href="#building-and-bundling">Building and Bundling</a></li>
+<li><a href="#modular-design">Modular Design</a></li>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#exercise">Exercise</a></li>
+</ul>
+</li>
+</ul>
+</div>
+      <a id="sidebar-toc-btn">&#x2261;</a>
+    
+    
+    
+    
+    
+    
+    
+    
+<script>
+
+var sidebarTOCBtn = document.getElementById('sidebar-toc-btn')
+sidebarTOCBtn.addEventListener('click', function(event) {
+  event.stopPropagation()
+  if (document.body.hasAttribute('html-show-sidebar-toc')) {
+    document.body.removeAttribute('html-show-sidebar-toc')
+  } else {
+    document.body.setAttribute('html-show-sidebar-toc', true)
+  }
+})
+</script>
+      
+  
+    </body></html>
