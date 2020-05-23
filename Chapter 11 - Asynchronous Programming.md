@@ -1,4 +1,4 @@
-[Chapter 11 - Asynchronous Programming](https://eloquentjavascript.net/11_async.html)
+#[Chapter 11 - Asynchronous Programming](https://eloquentjavascript.net/11_async.html)
 
 Comparision of synchronous and asynchronous
 
@@ -200,3 +200,245 @@ function test(variable){
 console.log(test(one));
 console.log(test(two));
 ```
+
+## Network Flooding
+
+A network that can only talk to his neighbors greatly limit the usefullness of the network, one solution is to set up a type of request that automatically forwarded to neighbors, neighbors then forward to their neighbors and all people in the network will receive the message.
+
+```JavaScript cmd = "node"
+import {everywhere} from "./crow-tech";
+
+everywhere(nest => {
+  nest.state.gossip = [];
+});
+
+function sendGossip(nest, message, exceptFor = null) {
+  nest.state.gossip.push(message);
+  for (let neighbor of nest.neighbors) {
+    if (neighbor == exceptFor) continue;
+    request(nest, neighbor, "gossip", message);
+    //request(nest, target, type, content)
+    //Send message, retry 3 times in 250ms. 
+  }
+}
+
+requestType("gossip", (nest, message, source) => {
+  if (nest.state.gossip.includes(message)) return;
+  console.log(`${nest.name} received gossip '${
+               message}' from ${source}`);
+  sendGossip(nest, message, source);
+});
+//requestType is a wrapper for
+//defineRequestType that allow
+//the handle function to return a promise
+//and wires that up to the callback.
+
+//Tell every crow becareful with kid.
+sendGossip(bigOak, "Kids with airgun in the park");
+```
+everywhere is a function that runs code on every nest. In here, nest.state.gossip is created to make sure each nest receive message once.
+
+When nest receive duplicate message, it ignores. When it receives new message, it spread out except the one send it the message.
+
+The request() seems to trigger the requestType() to deal with the request.
+
+## Message Routing
+
+When a node want to talk to only a specific node, use flooding will be a waste of resouces.
+
+```JavaScript cmd = "node"
+requestType("connections", (nest, {name, neighbors},
+                            source) => {
+  let connections = nest.state.connections;
+  if (JSON.stringify(connections.get(name)) ==
+      JSON.stringify(neighbors)) return;
+  connections.set(name, neighbors);
+  broadcastConnections(nest, name, source);
+});
+//If neighbor is found and same, return.
+//If neighbor no and not same, set.
+function broadcastConnections(nest, name, exceptFor = null) {
+  for (let neighbor of nest.neighbors) {
+    if (neighbor == exceptFor) continue;
+    request(nest, neighbor, "connections", {
+      name,
+      neighbors: nest.state.connections.get(name)
+    });
+  }
+}
+//Run request of connection is every nest.
+everywhere(nest => {
+  nest.state.connections = new Map;
+  nest.state.connections.set(nest.name, nest.neighbors);
+  broadcastConnections(nest, nest.name);
+});
+//Create nest.state.connections in every nest.
+```
+>The comparison uses JSON.stringify because ==, on objects or arrays, will return true only when the two are the exact same value, which is not what we need here. 
+
+The code aboce created map or graph that are same as in Chapter 7, so a smilar ```findRoute``` function which greatly resembles the ```findRoute``` from Chapter 7 can be use here, but instead of returning the whole route, it just returns the next step. The next step itself will use its current information about the network and decide where it sends he message. About || click [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Logical_Operators).
+
+```JavaScript cmd= "node"
+function findRoute(from, to, connections) {
+  let work = [{at: from, via: null}];
+  for (let i = 0; i < work.length; i++) {
+    let {at, via} = work[i];
+    for (let next of connections.get(at) || []) {
+      if (next == to) return via;
+      if (!work.some(w => w.at == next)) {
+        work.push({at: next, via: via || next});
+        //via: via||next
+        //If via is false or null, via = next
+        //else via = via
+        //Via is the next step.
+      }
+    }
+  }
+  return null;
+}
+```
+With this ```findRoute```, a funtion that can send long-distance messages can be built. If the message is to direct neighbor, send. If message is to far neighbor, it is packaged in an object and send to a neighbor that is closer to the target, using the "route" request type, which will cause that neighbor to repeat the same behavior.
+
+```JavaScript cmd="node"
+function routeRequest(nest, target, type, content) {
+  if (nest.neighbors.includes(target)) {
+    return request(nest, target, type, content);
+  } else {
+    let via = findRoute(nest.name, target,
+                        nest.state.connections);
+    if (!via) throw new Error(`No route to ${target}`);
+    return request(nest, via, "route",
+                   {target, type, content});
+  }
+}
+
+requestType("route", (nest, {target, type, content}) => {
+  return routeRequest(nest, target, type, content);
+});
+```
+*If via is a parameter, send to there ? 2 request in routeRequest.
+1.```request(nest, target, type, content);```
+2.```request(nest, via, "route",
+                   {target, type, content})```*
+A message can now be send send from bigOak to churchh tower which is four nest away.
+
+```JavaScript cmd="node"
+routeRequest(bigOak, "Church Tower", "note",
+             "Incoming jackdaws!");
+```
+
+>We’ve constructed several layers of functionality on top of a primitive communication system to make it convenient to use. This is a nice (though simplified) model of how real computer networks work.<br>
+A distinguishing property of computer networks is that they aren’t reliable—abstractions built on top of them can help, but you can’t abstract away network failure. So network programming is typically very much about anticipating and dealing with failures.
+
+## Async Functions
+
+Information is not store in one storage only, to retrieve a pieve of information, the computer need to consult other computer(computer = nest in this case)until it finds the one has it.
+
+```JavaScript cmd="node"
+requestType("storage", (nest, name) => storage(nest, name));
+
+function findInStorage(nest, name) {
+  return storage(nest, name).then(found => {
+    if (found != null) return found;
+    else return findInRemoteStorage(nest, name);
+  });
+}
+
+function network(nest) {
+  return Array.from(nest.state.connections.keys());
+}
+
+function findInRemoteStorage(nest, name) {
+  let sources = network(nest).filter(n => n != nest.name);
+  function next() {
+    if (sources.length == 0) {
+      return Promise.reject(new Error("Not found"));
+    } else {
+      let source = sources[Math.floor(Math.random() *
+                                      sources.length)];
+      sources = sources.filter(n => n != source);
+      return routeRequest(nest, source, "storage", name)
+        .then(value => value != null ? value : next(),
+              next);
+      //routeRequest(nest, target, type, content)
+    }
+  }
+  return next();
+}
+```
+>Because connections is a Map, Object.keys doesn’t work on it. It has a keys method, but that returns an iterator rather than an array. An iterator (or iterable value) can be converted to an array with the Array.from function.<br>
+Even with promises this is some rather awkward code. Multiple asynchronous actions are chained together in non-obvious ways. We again need a recursive function (next) to model looping through the nests.<br>
+And the thing the code actually does is completely linear—it always waits for the previous action to complete before starting the next one. In a synchronous programming model, it’d be simpler to express.<br>
+The good news is that JavaScript allows you to write pseudo-synchronous code to describe asynchronous computation. An async function is a function that implicitly returns a promise and that can, in its body, await other promises in a way that looks synchronous.<br>
+We can rewrite findInStorage like this:
+
+```JavaScript cmd="node"
+async function findInStorage(nest, name) {
+  let local = await storage(nest, name);
+  if (local != null) return local;
+  //Asume storage(nest.name) return
+  //storage if found local.
+
+  let sources = network(nest).filter(n => n != nest.name);
+  while (sources.length > 0) {
+    let source = sources[Math.floor(Math.random() *
+                                    sources.length)];
+    sources = sources.filter(n => n != source);
+    try {
+      let found = await routeRequest(nest, source, "storage",
+                                     name);
+      //routeRequest(nest, target, type, content)
+      if (found != null) return found;
+    } catch (_) {}
+  }
+  throw new Error("Not found");
+}
+```
+**Logic in code above is find a random nest from neighbour??? The name parameter which should be the name of the storage is not anywhere in the code above execpt in routeRequest which also does not verify if the storage is at the specific nest (source).**
+```JavaScript cmd="node"
+findInStorage(bigOak, "events on 2017-12-21")
+  .then(console.log);
+```
+
+>An ```async``` function is marked by the word ```async``` before the function keyword. Methods can also be made ```async``` by writing ```async``` before their name. When such a function or method is called, it returns a promise. As soon as the body returns something, that promise is resolved. If it throws an exception, the promise is rejected.
+
+In an ```async``` function, keyword ```await``` can be put in front of an expression to wait for a promise to resolve and only then continue the execution of the function. This kind of function is frozen and can be resume at a later time.
+
+>For non-trivial asynchronous code, this notation is usually more convenient than directly using promises. Even if you need to do something that doesn’t fit the synchronous model, such as perform multiple actions at the same time, it is easy to combine await with the direct use of promises.
+
+## Generators
+
+```generator``` functions, bring pause and resume to function. Similar to ```async``` but without promises.
+
+An asterisk(\*) placed after the function (function\*), it becomes a generator. When you call a generator, it **returns an iterator**, which we already saw in Chapter 6.
+```JavaScript cmd="node"
+function* powers(n) {
+  for (let current = n;; current *= n) {
+    yield current;
+  }
+}
+
+for (let power of powers(3)) {
+  if (power > 50) break;
+  console.log(power);
+}
+// → 3
+// → 9
+// → 27
+```
+For a generator function, the function is frozen at its start. Every time ```next``` is call on the iterator, it runs until it hits a ```yield``` expression, which pause and causes the yielded value to become the next value produces by the iterator. The iterator stops when the function returns.
+
+Group class that are written in exercise of Chapter 6 can also be written in generator. Take note that the state a generator saves is local environment, so ```yield```  can only occur directly in the generator function itself.
+```JavaScript cmd="node"
+Group.prototype[Symbol.iterator] = function*() {
+  for (let i = 0; i < this.members.length; i++) {
+    yield this.members[i];
+  }
+};
+```
+>An async function is a special type of generator. It produces a promise when called, which is resolved when it returns (finishes) and rejected when it throws an exception. Whenever it yields (awaits) a promise, the result of that promise (value or thrown exception) is the result of the await expression.
+
+## The Event Loop
+
+**?????**
+
