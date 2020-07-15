@@ -1,2 +1,2 @@
 # EloquentJS-Notes
-Notes for EloquentJS.
+Notes for [EloquentJS](https://eloquentjavascript.net/).
